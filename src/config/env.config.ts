@@ -3,7 +3,7 @@ dotenv.config();
 
 export const envs = {
 	PORT: process.env.PORT,
-	API_KEY_SIGO: process.env.API_KEY_SMART_POS,
+	API_KEY: process.env.API_KEY,
 
 	DB: {
 		HOST: process.env.DB_HOST,

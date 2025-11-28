@@ -14,14 +14,20 @@ export const db = mysql.createPool({
   ssl: envs.DB.SSL ? { rejectUnauthorized: false } : undefined,
 });
 
-// Ejemplo de uso
-async function testConnection() {
-  try {
-    const [rows] = await db.query('SELECT 1 + 1 AS result');
-    console.log(rows); // [{ result: 2 }]
-  } catch (err) {
-    console.error('Error conectando a MySQL:', err);
+async function testConnectionWithRetry(retries = 5, delay = 3000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const connection = await db.getConnection();
+      console.log('Conexión a MySQL exitosa');
+      connection.release();
+      return;
+    } catch (err) {
+      console.log(`MySQL no disponible, reintentando en ${delay/1000}s...`);
+      await new Promise(res => setTimeout(res, delay));
+    }
   }
+  console.error('No se pudo conectar a MySQL después de varios intentos');
 }
 
-testConnection();
+testConnectionWithRetry();
+

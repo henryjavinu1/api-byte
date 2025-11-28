@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import routes from './routes/index';
 import { db } from './config/db.config';
+import { sessionMiddleware, keycloak } from './config/keycloak.config';
 
 export class Server {
   private app: Application;
@@ -25,6 +26,10 @@ export class Server {
     this.app.use(cors());
     this.app.use(cookieParser());
     this.app.use(express.static(path.join(__dirname, 'public')));
+
+    // Keycloak session and middleware
+    this.app.use(sessionMiddleware);
+    this.app.use(keycloak.middleware());
   }
 
   private routes(): void {

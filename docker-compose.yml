@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1.1
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8180:8080"  # Cambié el puerto local para evitar conflictos
+    command: start-dev
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: DemoByte
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql-data:/var/lib/mysql
+
+  api:
+    build: .
+    container_name: api
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      - keycloak
+      - mysql
+    volumes:
+      - ./:/usr/src/app     
+      - /usr/src/app/node_modules 
+
+volumes:
+  keycloak-data:
+  mysql-data:
