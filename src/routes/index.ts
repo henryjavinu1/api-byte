@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { db } from '@config/db.config';
 import personRoutes from './person.routes';
-import { keycloak } from '../config/keycloak.config';
+import { verifyToken } from 'middlewares/verifyToken';
+import { requireRole } from 'middlewares/requireRole';
 
 const router = Router();
 
@@ -23,10 +24,6 @@ router.get('/test-db', async (req, res) => {
 });
 
 // Proteger TODO el módulo de personas
-// router.use('/persons', keycloak.protect(), personRoutes);
-router.use('/persons', personRoutes);
-
-// proteger rutas con roles específicos:
-// router.use('/admin/persons', keycloak.protect("realm:admin"), personRoutes);
+router.use('/persons', verifyToken, personRoutes);
 
 export default router;

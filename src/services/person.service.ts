@@ -13,7 +13,6 @@ import {
 import { PaginationParams } from "../models/PaginationParams";
 import { PaginatedResult } from "../models/PaginatedResult";
 
-// Tipo de input para crear o actualizar una persona con sus credenciales
 export interface PersonInput {
   NIT: string;
   Name: string;
@@ -91,7 +90,6 @@ export const PersonService = {
     const person = await PersonRepository.findById(id);
     if (!person) throw new Error("Person not found");
 
-    // No se puede modificar NIT ni ID
     delete data.NIT;
     delete (data as any).ID;
 
